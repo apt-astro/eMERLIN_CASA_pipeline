@@ -1171,18 +1171,23 @@ def search_observatory_flags(eMCP):
         logger.info('Initial obs time {0}'.format(t0))
         logger.info('Final   obs time {0}'.format(t1))
         s = socket.gethostname()
-        if t0 > datetime.datetime(2019,1,25,17,15,0) and s == 'pipeline':
-            # Retrieve database (Only locally at pipeline machine JBO)
+        if t0 > datetime.datetime(2019,1,25,17,15,0) and s == 'pipeline' or 'compute-' in s:
+            # Retrieve database (Only locally at pipeline machine JBO, or on Galahad compute cluster)
             # Only available from 2019-01-25 at 17:15:00
             logger.info('Trying to retrieve observatory flags (locally)')
             s1 = 'emproc1'
             s2 = 'ast.man.ac.uk'
-            loc = '/home/emerlin/jmoldon/otcx/antenna_monitor.log'
-            try:
-                os.system('scp -pr {0}.{1}:{2} /pipeline1/emerlin/files/'.format(s1,s2,loc))
-            except:
-                pass
-            logfile = '/pipeline1/emerlin/files/antenna_monitor.log'
+            if s == 'pipeline':
+                loc = '/home/emerlin/jmoldon/otcx/antenna_monitor.log'
+                logfile = '/pipeline1/emerlin/files/antenna_monitor.log'
+                try:
+                    os.system('scp -pr {0}.{1}:{2} /pipeline1/emerlin/files/'.format(s1,s2,loc))
+                except:
+                    pass
+            else:
+                #Applicable for any of the galahad nodes
+                loc = './antenna_monitor.log'
+                logfile = './antenna_monitor.log'
             data = read_flag_database(logfile, t0, t1)
             flag_commands = ''
             logger.info('Generating flags for this dataset')
