@@ -202,6 +202,10 @@ def run_pipeline(inputs_file='./inputs.ini', run_steps=[], skip_steps=[]):
         eMCP, msinfo, msfile = em.get_msinfo(eMCP, msfile)
         em.plot_elev_uvcov(eMCP)
 
+    ### Apply flag mask
+    if eMCP['input_steps']['flag_mask'] > 0:
+        eMCP = em.run_flagdata0_mask(eMCP)
+
     ### Run AOflagger
     if eMCP['input_steps']['flag_aoflagger'] > 0:
         eMCP = em.run_aoflagger_fields(eMCP)

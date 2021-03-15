@@ -923,6 +923,10 @@ def fix_repeated_sources(msfile0, msfile1, datacolumn, antenna,
         rmdir(outputmsfile_tmp)
     return
 
+def run_flagdata0_mask(eMCP):
+    logger.into('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ')
+    logger.info('This is where the flag mask will be implemented')
+    logger.info('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ')
 
 def run_aoflagger_fields(eMCP):
     """This version of the autoflagger iterates through the ms within the mms structure selecting individual fields. It uses pre-defined strategies. The np.unique in the loop below is needed for single source files. The mms thinks there are many filds (one per mms). I think it is a bug from virtualconcat."""
@@ -3862,8 +3866,8 @@ def shift_all_positions(eMCP):
     return eMCP
 
 def list_of_steps():
-    pre_processing_steps = ['run_importfits', 'flag_aoflagger', 'flag_apriori',
-                            'flag_manual', 'average', 'plot_data',
+    pre_processing_steps = ['run_importfits', 'flag_mask', 'flag_aoflagger',
+                            'flag_apriori', 'flag_manual', 'average', 'plot_data',
                             'save_flags']
     calibration_steps = ['restore_flags', 'flag_manual_avg', 'init_models',
                          'bandpass', 'initial_gaincal', 'fluxscale',
