@@ -924,9 +924,37 @@ def fix_repeated_sources(msfile0, msfile1, datacolumn, antenna,
     return
 
 def run_flagdata0_mask(eMCP):
-    logger.into('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ')
-    logger.info('This is where the flag mask will be implemented')
-    logger.info('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ')
+    """Due to the deteriorating RFI environment in the UK in 2020/21 (and in particular the wide 4G+ signal which dominates spw3) an extra pipeline step to apply a flag mask of known bad channels has been added. The flag mask will initially be a semi-static file (hosted on GitHub) with unusable frequency ranges hardwired in. In future we may automate generation of the flag mask based on real-time dipole RFI monitoring, but that is not planned for the immediate future"""
+    applymask = eMCP['defaults']['global']['flag_mask']
+    if applymask == 1:
+        msg = ''
+        t0 = datetime.datetime.utcnow()
+        msinfo = eMCP['msinfo']
+        msfile = msinfo['msfile']
+        antennas = msinfo['antennas']
+        flagfile = 'rfi_mask.flags'
+        if os.path.exists(flagfile):
+            logger.info('RFI mask file already present, '\
+                        'will not overwrite file {}'.format(flagfile))
+            logger.info('Applying flagmask from {}'.format(flagfile))
+            logger.info('RFI mask contains the following commands:')
+            with open('./rfi_mask.flags') as f:
+                lines = f.readlines()
+                for line in lines:
+                    logger.info(line.strip('\n'))
+            flagdata(vis=msfile, mode='list', inpfile=flagfile, flagbackup=False)
+            find_casa_problems()
+            finished_flagmask = True
+            msg += 'RFI flag mask successfully applied'
+        else:
+            logger.info('ERROR the user asked me to use an RFI mask, but none was supplied...')
+            msg += 'ERROR: RFI flag mask is missing. Skipping this step.'
+    else:
+        logger.info('No RFI flag mask was applied.')
+        msg += 'No RFI flag mask was requested or applied.'
+    logger.info('End flag_mask')
+    eMCP = add_step_time('flag_mask', eMCP, msg, t0)
+    return eMCP
 
 def run_aoflagger_fields(eMCP):
     """This version of the autoflagger iterates through the ms within the mms structure selecting individual fields. It uses pre-defined strategies. The np.unique in the loop below is needed for single source files. The mms thinks there are many filds (one per mms). I think it is a bug from virtualconcat."""

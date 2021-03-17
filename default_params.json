@@ -6,6 +6,7 @@
     "is_mixed_mode"          : "auto",
     "applymode"              : "calflagstrict",
     "run_importfits"         : 1,
+    "flag_mask"              : 1,  
     "flag_aoflagger"         : 1,
     "flag_apriori"           : 1,
     "flag_manual"            : 1,
