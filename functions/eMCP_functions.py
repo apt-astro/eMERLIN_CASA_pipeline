@@ -1007,12 +1007,12 @@ def run_aoflagger_fields(eMCP):
         # If not, check if user has produced a new strategy for this field in the pipeline folder (for typical sources, etc).
         # If not, check for default strategies for this field
         # If nothing is found, just use the default strategy
-        if os.path.isfile('./aoflagger_strategies/user/{0}.rfis'.format(field))==True:
-            aostrategy = './aoflagger_strategies/user/{0}.rfis'.format(field)
-        elif os.path.isfile(pipeline_path+'aoflagger_strategies/default/{0}.rfis'.format(field))==True:
-            aostrategy = pipeline_path+'aoflagger_strategies/default/{0}.rfis'.format(field)
+        if os.path.isfile('./aoflagger_strategies/user/{0}.lua'.format(field))==True:
+            aostrategy = './aoflagger_strategies/user/{0}.lua'.format(field)
+        elif os.path.isfile(pipeline_path+'aoflagger_strategies/default/{0}.lua'.format(field))==True:
+            aostrategy = pipeline_path+'aoflagger_strategies/default/{0}.lua'.format(field)
         else:
-            aostrategy = pipeline_path+'aoflagger_strategies/default/{0}.rfis'.format('default_faint')
+            aostrategy = pipeline_path+'aoflagger_strategies/default/{0}.lua'.format('default_faint')
         logger.info('Running AOFLagger for field {0} ({1}) using strategy {2}'.format(field,fields_num[field], aostrategy))
         if separate_bands:
             num_spw = len(vishead(msfile, mode = 'list', listitems = ['spw_name'])['spw_name'][0])
