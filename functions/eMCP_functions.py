@@ -1048,10 +1048,10 @@ def check_aoflagger_version():
     logger.info('Checking AOflagger version')
     from subprocess import Popen, PIPE
     try:
-        process = Popen(['aoflagger'], stdout=PIPE)
+        process = Popen(['aoflagger', '--version'], stdout=PIPE)
         (output, err) = process.communicate()
         exit_code = process.wait()
-        version = output.split()[1]
+        version = str(output.split()[1]).decode("utf-8")
         version_list = version.split('.')
         if (version_list[0] == '2') and (int(version_list[1]) < 9):
             old_aoflagger = True
@@ -1203,10 +1203,10 @@ def search_observatory_flags(eMCP):
         logger.info('Initial obs time {0}'.format(t0))
         logger.info('Final   obs time {0}'.format(t1))
         s = socket.gethostname()
-        if t0 > datetime.datetime(2019,1,25,17,15,0) and s == 'pipeline' or 'compute-' in s:
-            # Retrieve database (Only locally at pipeline machine JBO, or on Galahad compute cluster)
-            # Only available from 2019-01-25 at 17:15:00
-            logger.info('Trying to retrieve observatory flags (locally)')
+        if t0 > datetime.datetime(2019,1,25,17,15,0):
+            #Flag database is available online via a copy which is regularly
+            #rsync'd from Javier's master copy
+            logger.info('Trying to retrieve observatory flags')
             s1 = 'emproc1'
             s2 = 'ast.man.ac.uk'
             if s == 'pipeline':
@@ -1217,7 +1217,7 @@ def search_observatory_flags(eMCP):
                 except:
                     pass
             else:
-                #Applicable for any of the galahad nodes
+                os.system('wget -O antenna_monitor.log http://www.e-merlin.ac.uk/distribute/antenna_log_rsync/antenna_monitor.log')
                 loc = './antenna_monitor.log'
                 logfile = './antenna_monitor.log'
             data = read_flag_database(logfile, t0, t1)
