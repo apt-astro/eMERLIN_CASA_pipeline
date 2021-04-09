@@ -954,7 +954,6 @@ def run_flagdata0_mask(eMCP):
     flag_statistics(eMCP, step='flag_mask')
     logger.info('End flag_mask')
     eMCP = add_step_time('flag_mask', eMCP, msg, t0)
-    print(eMCP)
     return eMCP
 
 def run_aoflagger_fields(eMCP):
