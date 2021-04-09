@@ -944,7 +944,6 @@ def run_flagdata0_mask(eMCP):
                     logger.info(line.strip('\n'))
             flagdata(vis=msfile, mode='list', inpfile=flagfile, flagbackup=False)
             find_casa_problems()
-            finished_flagmask = True
             msg += 'RFI flag mask successfully applied'
         else:
             logger.info('ERROR the user asked me to use an RFI mask, but none was supplied...')
@@ -952,8 +951,10 @@ def run_flagdata0_mask(eMCP):
     else:
         logger.info('No RFI flag mask was applied.')
         msg += 'No RFI flag mask was requested or applied.'
+    flag_statistics(eMCP, step='flag_mask')
     logger.info('End flag_mask')
     eMCP = add_step_time('flag_mask', eMCP, msg, t0)
+    print(eMCP)
     return eMCP
 
 def run_aoflagger_fields(eMCP):
@@ -1018,14 +1019,15 @@ def run_aoflagger_fields(eMCP):
             num_spw = len(vishead(msfile, mode = 'list', listitems = ['spw_name'])['spw_name'][0])
             for b in range(num_spw):
                 logger.info('Processing source {0}, band {1}'.format(field, b))
-                flagcommand = 'time aoflagger -fields {2} -bands {3} -strategy {0} {1}'.format(aostrategy, msfile, fields_num[field], b)
-                #os.system(flagcommand+' | tee -a pre-cal_flag_stats.txt')
-                os.system(flagcommand)
+                flagcommand = 'time aoflagger -v -fields {2} -bands {3} -strategy {0} {1}'.format(aostrategy, msfile, fields_num[field], b)
+                os.system(flagcommand+' | tee -a pre-cal_flag_stats.txt')
+                #os.system(flagcommand)
             logger.info('Last AOFlagger command: {}'.format(flagcommand))
         else:
             logger.info('Processing source {0}, all bands'.format(field))
-            flagcommand = 'time aoflagger -fields {2} -strategy {0} {1}'.format(aostrategy, msfile, fields_num[field])
+            flagcommand = 'time aoflagger -v -fields {2} -strategy {0} {1}'.format(aostrategy, msfile, fields_num[field])
             os.system(flagcommand+' | tee -a pre-cal_flag_stats.txt')
+            #os.system(flagcommand)
             logger.info('Last AOFlagger command: {}'.format(flagcommand))
         ms.writehistory(message='eMER_CASA_Pipeline: AOFlag field {0} with strategy {1}:'.format(field, aostrategy),msname=msfile)
     #flag_applied(flags, 'flagdata0_aoflagger')
@@ -1394,7 +1396,7 @@ def flagdata_manual(eMCP, run_name='flag_manual'):
             msg += 'Narrow (sp): {0}'.format(inpfile_narrow)
     flag_statistics(eMCP, step=run_name)
     logger.info('End {}'.format(run_name))
-    eM = add_step_time(run_name, eMCP, msg, t0)
+    eMCP = add_step_time(run_name, eMCP, msg, t0)
     return eMCP
 
 def flagdata_tfcrop(eMCP, defaults):
