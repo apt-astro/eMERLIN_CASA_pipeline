@@ -932,6 +932,7 @@ def run_flagdata0_mask(eMCP):
         msinfo = eMCP['msinfo']
         msfile = msinfo['msfile']
         antennas = msinfo['antennas']
+        os.system('wget -O rfi_mask.flags http://www.e-merlin.ac.uk/distribute/antenna_log_rsync/rfi_mask.flags')
         flagfile = 'rfi_mask.flags'
         if os.path.exists(flagfile):
             logger.info('RFI mask file already present, '\
